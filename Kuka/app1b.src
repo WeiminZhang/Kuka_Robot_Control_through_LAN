@@ -1,0 +1,92 @@
+&ACCESS RVP
+&REL 1
+&PARAM DISKPATH = KRC:\R1\Program\arash
+DEF app1b( )
+;Created by Dumitru Loghin  23_11_2016
+;loghindumitru82@gmail.com
+;NanoRobotics Laboratory Polytechnique Montreal
+;FOLD Declaration
+INT i
+DECL EKI_STATUS RET
+$FLAG[1]=FALSE
+
+;ENDFOLD
+;FOLD INI;%{PE}
+  ;FOLD BASISTECH INI
+    GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+    INTERRUPT ON 3 
+    BAS (#INITMOV,0 )
+  ;ENDFOLD (BASISTECH INI)
+  ;FOLD USER INI
+    ;Make your modifications here
+
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+
+
+;FOLD PTP P2 Vel=100 % PDAT2 Tool[1]:Table Base[0];%{PE}%R 8.3.40,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P2, 3:, 5:100, 7:PDAT2
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT2
+FDAT_ACT=FP2
+BAS(#PTP_PARAMS,100)
+PTP XP2 
+;ENDFOLD
+
+;FOLD Define callback
+INTERRUPT DECL 89 WHEN $FLAG[998]==TRUE DO GET_DATA()
+INTERRUPT ON 89
+;ENDFOLD
+
+;FOLD ; TTT;%{PE}%R 8.3.40,%MKUKATPBASIS,%CCOMMENT,%VNORMAL,%P 2:TTT
+;ENDFOLD
+RET=EKI_Init("ConfigApp1")
+RET=EKI_Open("ConfigApp1")
+WHILE TRUE
+;FOLD Write data to connection
+; Write frame to <LastPos X="" Y="" Z="" A="" B="" C="" />
+RET=EKI_SetFrame("ConfigApp1","Robot/Data/LastPos", $POS_ACT)
+; Write int to <Status></Status>
+RET=EKI_SetInt("ConfigApp1","Robot/Status", 12345678)
+;ENDFOLD
+RET = EKI_Send("ConfigApp1","Robot")
+
+$FLAG[1]=FALSE
+
+;wait until data read
+WAIT FOR $FLAG[1]
+
+PTP_REL newP
+ENDWHILE
+RET=EKI_Close("ConfigApp1")
+RET=EKI_Clear("ConfigApp1")
+END
+
+DEF GET_DATA()
+;FOLD Declaration
+INT i
+DECL EKI_STATUS RET
+FRAME valF
+
+;ENDFOLD
+;FOLD Initialize sample data
+valF={X 0.0,Y 0.0,Z 0.0,A 0.0,B 0.0,C 0.0}
+
+;ENDFOLD
+;FOLD Get received sensor data
+
+RET=EKI_GetFrame("ConfigApp1","Pc/Data/SetPos",valF)
+
+newP.x=valF.X
+newP.y=valF.Y
+newP.z=valF.Z
+newP.a=valF.A
+newP.b=valF.B
+newP.c=valF.C
+
+;ENDFOLD
+;FOLD Signal read
+
+$FLAG[998]=FALSE
+$FLAG[1]=TRUE
+
+END

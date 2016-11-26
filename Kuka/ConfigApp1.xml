@@ -1,0 +1,32 @@
+<ETHERNETKRL>
+	<CONFIGURATION>
+		<EXTERNAL>
+                        <IP>172.31.1.149</IP>
+                        <PORT>1234</PORT>
+                        <TYPE>Server</TYPE>
+		</EXTERNAL>
+	</CONFIGURATION>
+	<RECEIVE>
+		<XML>
+                        <ELEMENT Tag="Pc/Data/SetPos/@X" Type="REAL"/>
+                        <ELEMENT Tag="Pc/Data/SetPos/@Y" Type="REAL"/>
+                        <ELEMENT Tag="Pc/Data/SetPos/@Z" Type="REAL"/>
+                        <ELEMENT Tag="Pc/Data/SetPos/@A" Type="REAL"/>
+                        <ELEMENT Tag="Pc/Data/SetPos/@B" Type="REAL"/>
+                        <ELEMENT Tag="Pc/Data/SetPos/@C" Type="REAL"/>
+                        <ELEMENT Tag="Pc" Set_Flag="998"/>
+		</XML>
+	</RECEIVE>
+	<SEND>
+		<XML>
+			<ELEMENT Tag="Robot/Data/LastPos/@X"/>
+			<ELEMENT Tag="Robot/Data/LastPos/@Y"/>
+			<ELEMENT Tag="Robot/Data/LastPos/@Z"/>
+			<ELEMENT Tag="Robot/Data/LastPos/@A"/>
+			<ELEMENT Tag="Robot/Data/LastPos/@B"/>
+			<ELEMENT Tag="Robot/Data/LastPos/@C"/>			
+			<ELEMENT Tag="Robot/Status"/>
+			<ELEMENT Tag="Robot/Mode"/>
+		</XML>
+	</SEND>
+</ETHERNETKRL>
